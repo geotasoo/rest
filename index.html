@@ -53,8 +53,12 @@
   #welcome .globe { font-size: 52px; opacity: 0.4; }
   #country-page { display: none; flex-direction: column; flex: 1; }
   #top-bar {
-    padding: 1.25rem 2rem 1rem; background: #fff; border-bottom: 1px solid var(--border);
+    padding: 1.25rem 2rem 1rem; background: #fff; border-bottom: none;
     display: flex; align-items: center; flex-wrap: wrap; gap: 12px; position: sticky; top: 0; z-index: 10;
+  }
+  #flag-band {
+    height: 4px; width: 100%; background: var(--border);
+    transition: background 0.4s ease;
   }
   #top-bar h2 { font-family: 'Noto Serif KR', serif; font-size: 26px; font-weight: 600; color: var(--ink); flex-shrink: 0; }
   #top-bar .en { font-size: 13px; color: var(--ink-faint); letter-spacing: 0.03em; flex-shrink: 0; }
@@ -146,15 +150,19 @@
     align-items: center; gap: 8px; justify-content: flex-start;
   }
   #mobile-list-toggle #mlt-current { color: var(--hl); font-weight: 500; }
-  /* 최근 본 나라 (데스크탑) */
-  #recent-wrap { flex-shrink: 0; }
-  .recent-section { border-bottom: 1px solid var(--sb-line); padding: 0.5rem 0 0.4rem; }
-  .recent-title { font-size: 9px; letter-spacing: 0.08em; color: var(--sb-text-dim); text-transform: uppercase; padding: 0 1.1rem; margin-bottom: 4px; }
-  .recent-item { display: flex; align-items: center; gap: 7px; padding: 4px 1.1rem; cursor: pointer; transition: background 0.1s; }
-  .recent-item:hover { background: var(--sb-hover); }
-  .recent-item img { width: 18px; height: 12px; object-fit: cover; border-radius: 1px; flex-shrink: 0; border: 1px solid #1c262e; }
-  .recent-item span { font-size: 11px; color: var(--sb-text); }
   .mobile-tabs { display: none; }
+  /* 인구·면적 비교 도형 */
+  .compare-row { margin-top: 8px; }
+  .compare-row .cmp-label { display:flex; justify-content:space-between; font-size: 11px; color: var(--ink-muted); margin-bottom: 3px; }
+  .compare-row .cmp-label b { color: var(--ink); font-weight: 500; }
+  .cmp-bar-track { background: var(--paper-dark); border-radius: 3px; overflow: hidden; height: 13px; border: 1px solid var(--border); margin-bottom: 3px; }
+  .cmp-bar-fill { height: 100%; border-radius: 2px; }
+  .cmp-bar-fill.korea { background: #c8d6e0; }
+  .cmp-bar-fill.country { background: var(--accent); }
+  .cmp-mini { font-size: 10px; color: var(--ink-faint); }
+  .src-note { font-size: 9px; color: var(--ink-faint); margin-top: 6px; font-style: italic; }
+  .culture-tags { display: flex; flex-wrap: wrap; gap: 5px 10px; }
+  .culture-tag { font-size: 12px; color: var(--accent); line-height: 1.5; }
   @media (max-width: 860px) {
     body { flex-direction: column; }
     #sidebar { width: 100%; height: auto; position: relative; min-height: auto; }
@@ -162,7 +170,6 @@
     #sidebar-inner { display: none; }
     #sidebar.list-open #sidebar-inner { display: block; max-height: 75vh; overflow-y: auto; }
     #sidebar.list-open #country-list { max-height: none; }
-    #recent-wrap { display: none; }
     #main { margin-left: 0; }
     #four-col-wrap { flex-direction: column; }
     #content-cols { grid-template-columns: 1fr !important; }
@@ -219,14 +226,12 @@
   </div>
   <div class="tag-filter-bar">
     <button class="tag-toggle-btn" style="margin-top:0;" onclick="this.classList.toggle('open');document.getElementById('tag-pills-wrap').classList.toggle('open')">
-      <span class="arrow">▾</span> <span style="letter-spacing:0.04em;font-size:10px;">상징·색으로 찾기</span>
-      <span style="font-size:9px;color:var(--sb-text-dim);margin-left:2px;">독수리·십자가·바다…</span>
+      <span class="arrow">▾</span> <span style="font-size:10px;white-space:nowrap;">상징·색으로 찾기 <span style="color:var(--sb-text-dim);">(독수리·바다…)</span></span>
     </button>
     <div class="tags-collapsible" id="tag-pills-wrap">
       <div id="tag-pills" style="display:flex;flex-wrap:wrap;gap:3px;margin-top:6px;"></div>
     </div>
   </div>
-  <div id="recent-wrap"></div>
   <div id="country-list"></div>
   </div>
 </nav>
@@ -246,6 +251,7 @@
         <button class="nav-btn" title="다음 나라" onclick="navCountry(1)">→</button>
       </div>
     </div>
+    <div id="flag-band"></div>
     <div class="mobile-tabs" id="mobile-tabs">
       <button class="mobile-tab-btn active" onclick="switchMobileTab('info', this)">🌍 정보</button>
       <button class="mobile-tab-btn" onclick="switchMobileTab('flag', this)">🏳️ 국기</button>
@@ -273,45 +279,6 @@ let filtered = [];
 let currentIdx = 0;
 let currentRegion = 'all';
 let activeTagFilter = null;
-const RECENT_KEY = 'wsd_recent_v1';
-const RECENT_MAX = 5;
-
-function getRecent() {
-  try {
-    const raw = localStorage.getItem(RECENT_KEY);
-    return raw ? JSON.parse(raw) : [];
-  } catch(e) { return []; }
-}
-
-function pushRecent(c) {
-  if (!c || !c.code) return;
-  try {
-    let list = getRecent().filter(code => code !== c.code);
-    list.unshift(c.code);
-    list = list.slice(0, RECENT_MAX);
-    localStorage.setItem(RECENT_KEY, JSON.stringify(list));
-  } catch(e) {}
-  renderRecent();
-}
-
-function renderRecent() {
-  const wrap = document.getElementById('recent-wrap');
-  if (!wrap) return;
-  const codes = getRecent();
-  const items = codes
-    .map(code => COUNTRIES.find(c => c.code === code))
-    .filter(Boolean);
-  if (items.length === 0) { wrap.innerHTML = ''; return; }
-  let html = '<div class="recent-section"><div class="recent-title">최근 본 나라</div>';
-  items.forEach(c => {
-    html += `<div class="recent-item" onclick="goToCode('${c.code}')">
-      <img src="${c.flag}" alt="" loading="lazy" onerror="this.style.visibility='hidden'">
-      <span>${c.name}</span></div>`;
-  });
-  html += '</div>';
-  wrap.innerHTML = html;
-}
-
 function toggleMobileList() {
   document.getElementById('sidebar').classList.toggle('list-open');
 }
@@ -397,6 +364,10 @@ function csvToCountry(row) {
     footballDesc: row.football_desc || '', footballWiki: row.football_wiki || '',
     anthem: { title: row.anthem_title || '', sub: row.anthem_sub || '' },
     anthemYoutube: row.anthem_youtube || '',
+    population: row.population || '',
+    area: row.area || '',
+    popAreaSource: row.pop_area_source || '',
+    cultureTags: row.culture_tags ? row.culture_tags.split(',').map(s=>s.trim()).filter(Boolean) : [],
     emblemDesc: row.emblem_desc || '', flagDesc: row.flag_desc || '',
     safetyUrl: row.safety_url || '',
     flagWiki: row.flag_wiki || row.flag_wiki_link || '',
@@ -422,7 +393,6 @@ async function loadFromSheet() {
   buildTagFilter();
   updateRegionCounts();
   buildList();
-  renderRecent();
   if (filtered.length > 0) {
     const hashCode = decodeURIComponent(location.hash.slice(1));
     const hi = hashCode ? filtered.findIndex(c => c.code === hashCode) : -1;
@@ -470,7 +440,6 @@ function selectCountry(idx) {
   if (c.code) history.replaceState(null, '', '#' + c.code);
   document.getElementById('welcome').style.display = 'none';
   document.getElementById('country-page').style.display = 'flex';
-  pushRecent(c);
   const mltCur = document.getElementById('mlt-current');
   if (mltCur) mltCur.textContent = c.name ? '· ' + c.name : '';
   closeMobileList();
@@ -502,6 +471,88 @@ function ytEmbedUrl(raw) {
   else if (/^[A-Za-z0-9_-]{6,}$/.test(v)) id = v;
   if (!id) return '';
   return 'https://www.youtube.com/embed/' + id;
+}
+
+const COLOR_MAP = {
+  '빨강':'#d52b1e','적색':'#d52b1e','진홍':'#c8102e','주홍':'#e63a27','적자색':'#7a263a','적갈색':'#9d2235','버건디':'#7a263a',
+  '주황':'#f57c00','오렌지':'#f57c00','노랑':'#f5c542','황금':'#e8b923','금색':'#e8b923','금':'#e8b923',
+  '초록':'#2e7d32','녹색':'#2e7d32','연두':'#7cb342','청록':'#00897b',
+  '파랑':'#1565c0','청색':'#1565c0','하늘색':'#4aa3df','남색':'#0d2b6b','감청':'#0d2b6b','옅은파랑':'#7fb5e6',
+  '보라':'#6a1b9a','자주':'#8e24aa',
+  '검정':'#1a1a1a','흑색':'#1a1a1a','검은색':'#1a1a1a',
+  '흰색':'#f5f5f5','백색':'#f5f5f5','은색':'#cfd8dc',
+  '갈색':'#6d4c41','밤색':'#5d4037','분홍':'#ec407a'
+};
+
+function colorToHex(name) {
+  if (!name) return null;
+  const k = name.trim();
+  if (COLOR_MAP[k]) return COLOR_MAP[k];
+  for (const key in COLOR_MAP) { if (k.includes(key)) return COLOR_MAP[key]; }
+  return null;
+}
+
+function hexLum(hex) {
+  const m = hex.replace('#','');
+  const r = parseInt(m.slice(0,2),16)/255, g = parseInt(m.slice(2,4),16)/255, b = parseInt(m.slice(4,6),16)/255;
+  const f = v => v <= 0.03928 ? v/12.92 : Math.pow((v+0.055)/1.055, 2.4);
+  return 0.2126*f(r) + 0.7152*f(g) + 0.0722*f(b);
+}
+
+function applyFlagBand(c) {
+  const band = document.getElementById('flag-band');
+  if (!band) return;
+  const cols = (c.colors||[]).map(colorToHex).filter(Boolean);
+  if (cols.length === 0) { band.style.background = 'var(--border)'; return; }
+  if (cols.length === 1) { band.style.background = cols[0]; return; }
+  const stops = cols.map((col, i) => {
+    const a = Math.round(i/cols.length*100);
+    const b = Math.round((i+1)/cols.length*100);
+    return `${col} ${a}%, ${col} ${b}%`;
+  }).join(', ');
+  band.style.background = `linear-gradient(90deg, ${stops})`;
+}
+
+const KR_POP = 51.7e6;      // 대한민국 인구 (약 5170만)
+const KR_AREA = 100210;     // 대한민국 면적 (km², 남한)
+
+function parseNum(s) {
+  if (!s) return null;
+  const cleaned = String(s).replace(/[,\s]/g,'').replace(/약/g,'');
+  const m = cleaned.match(/([0-9.]+)/);
+  if (!m) return null;
+  let n = parseFloat(m[1]);
+  if (/억/.test(cleaned)) n *= 1e8;
+  else if (/만/.test(cleaned)) n *= 1e4;
+  return isNaN(n) ? null : n;
+}
+
+function fmtPop(n) {
+  if (n >= 1e8) return (n/1e8).toFixed(n>=1e9?0:1)+'억 명';
+  if (n >= 1e4) return Math.round(n/1e4)+'만 명';
+  return Math.round(n)+' 명';
+}
+function fmtArea(n) {
+  return n.toLocaleString('en-US')+' km²';
+}
+
+function compareBar(labelKo, valStr, krVal, fmt, unitName) {
+  const v = parseNum(valStr);
+  if (v == null) return '';
+  const ratio = v / krVal;
+  // 막대: 둘 중 큰 쪽을 100%로
+  const maxV = Math.max(v, krVal);
+  const krPct = Math.max(2, Math.round(krVal/maxV*100));
+  const cPct = Math.max(2, Math.round(v/maxV*100));
+  let cmpText;
+  if (ratio >= 1) cmpText = `남한의 약 <b>${ratio>=10?Math.round(ratio):ratio.toFixed(1)}배</b>`;
+  else cmpText = `남한의 약 <b>${(ratio).toFixed(2)}배</b> (${Math.round(1/ratio)}분의 1)`;
+  return `<div class="compare-row">
+    <div class="cmp-label"><span>${labelKo}</span><b>${fmt(v)}</b></div>
+    <div class="cmp-bar-track"><div class="cmp-bar-fill country" style="width:${cPct}%"></div></div>
+    <div class="cmp-bar-track"><div class="cmp-bar-fill korea" style="width:${krPct}%"></div></div>
+    <div class="cmp-mini">■ ${unitName} &nbsp; ■ 남한 (${fmt(krVal)}) &nbsp;·&nbsp; ${cmpText}</div>
+  </div>`;
 }
 
 function renderPage(c) {
@@ -553,7 +604,28 @@ function renderPage(c) {
     parts.push(block);
   }
 
+  // 인구 · 면적 (남한 비교 도형)
+  const popBar = compareBar('인구', c.population, KR_POP, fmtPop, '이 나라');
+  const areaBar = compareBar('면적', c.area, KR_AREA, fmtArea, '이 나라');
+  if (popBar || areaBar) {
+    let block = `<hr class="info-divider"><div class="info-section-title">규모 (남한과 비교)</div>`;
+    block += popBar + areaBar;
+    if (c.popAreaSource) {
+      block += `<div class="src-note">출처: ${c.popAreaSource}</div>`;
+    }
+    parts.push(block);
+  }
+
+  // 문화 키워드 해시태그 (링크 없음, 제목 없음)
+  if ((c.cultureTags||[]).length) {
+    let block = `<hr class="info-divider"><div class="culture-tags">`;
+    block += c.cultureTags.map(t => `<span class="culture-tag">#${t}</span>`).join('');
+    block += `</div>`;
+    parts.push(block);
+  }
+
   document.getElementById('col-info').innerHTML = parts.join('');
+  applyFlagBand(c);
 
   document.getElementById('tb-name').textContent = c.name;
   document.getElementById('tb-en').textContent = c.en;
