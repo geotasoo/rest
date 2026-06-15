@@ -23,6 +23,7 @@
     position: fixed; top: 0; left: 0; display: flex; flex-direction: column;
     z-index: 100; overflow: hidden;
   }
+  #sidebar-inner { flex: 1; display: flex; flex-direction: column; min-height: 0; overflow: hidden; }
   #sidebar-header { padding: 1.1rem 1.1rem 0.8rem; border-bottom: 1px solid var(--sb-line); flex-shrink: 0; }
   #sidebar-header h1 { font-family: 'Noto Serif KR', serif; font-size: 14px; font-weight: 600; letter-spacing: 0.02em; color: #fff; }
   #sidebar-header p { font-size: 10px; color: var(--sb-text-dim); margin-top: 2px; letter-spacing: 0.05em; }
@@ -159,7 +160,8 @@
     #sidebar { width: 100%; height: auto; position: relative; min-height: auto; }
     #mobile-list-toggle { display: flex !important; }
     #sidebar-inner { display: none; }
-    #sidebar.list-open #sidebar-inner { display: block; }
+    #sidebar.list-open #sidebar-inner { display: block; max-height: 75vh; overflow-y: auto; }
+    #sidebar.list-open #country-list { max-height: none; }
     #recent-wrap { display: none; }
     #main { margin-left: 0; }
     #four-col-wrap { flex-direction: column; }
