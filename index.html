@@ -27,6 +27,8 @@
   #sidebar-header { padding: 1.1rem 1.1rem 0.8rem; border-bottom: 1px solid var(--sb-line); flex-shrink: 0; }
   #sidebar-header h1 { font-family: 'Noto Serif KR', serif; font-size: 14px; font-weight: 600; letter-spacing: 0.02em; color: #fff; }
   #sidebar-header p { font-size: 10px; color: var(--sb-text-dim); margin-top: 2px; letter-spacing: 0.05em; }
+  #notice-wrap { padding: 0.6rem 1.1rem; border-bottom: 1px solid var(--sb-line); flex-shrink: 0; font-size: 9px; line-height: 1.5; color: var(--hl); letter-spacing: 0.02em; }
+  #notice-wrap a { color: var(--hl); font-weight: 600; text-decoration: underline; white-space: nowrap; }
   #search-wrap { padding: 0.6rem 1.1rem; border-bottom: 1px solid var(--sb-line); flex-shrink: 0; }
   #search {
     width: 100%; background: var(--sb-hover); border: 1px solid var(--sb-line); border-radius: 3px;
@@ -228,6 +230,10 @@
       <button id="random-btn" title="랜덤 나라" onclick="selectRandom()" style="background:none;border:none;cursor:pointer;font-size:20px;padding:4px;line-height:1;opacity:0.7;transition:opacity 0.15s;" onmouseover="this.style.opacity=1" onmouseout="this.style.opacity=0.7">🎲</button>
     </div>
   </div>
+  <div id="notice-wrap">
+    AI가 하는 일이라 실수를 할 수 있습니다. 잘못된 정보를 알려주세요. 직접 수정하겠습니다.
+    <a href="MAILTO_OR_FORM_URL" target="_blank" rel="noopener">[응원 및 제보]</a>
+  </div>
   <div id="search-wrap">
     <input id="search" type="text" placeholder="나라 이름 검색..." />
   </div>
@@ -241,7 +247,7 @@
   </div>
   <div class="tag-filter-bar">
     <button class="tag-toggle-btn" style="margin-top:0;" onclick="this.classList.toggle('open');document.getElementById('tag-pills-wrap').classList.toggle('open')">
-      <span class="arrow">▾</span> <span style="font-size:11px;white-space:nowrap;font-weight:500;">상징·색으로 찾기 <span style="opacity:0.7;font-weight:400;">(독수리·바다…)</span></span>
+      <span class="arrow">▾</span> <span style="font-size:11px;white-space:nowrap;font-weight:500;">상징과 색으로 찾기</span>
     </button>
     <div class="tags-collapsible" id="tag-pills-wrap">
       <div id="tag-pills" style="display:flex;flex-wrap:wrap;gap:3px;margin-top:6px;"></div>
@@ -642,8 +648,7 @@ function renderPage(c) {
   // 상단 요약 4줄: 나라 이름 유래 / 별명 / 주요 도시 / 해시태그
   const sumParts = [];
   if (c.meaning) {
-    const meaningHtml = c.meaning.split(/\s*·\s*/).map(s => `<span class="dot2">${s}</span>`).join('');
-    sumParts.push(`<div class="sum-row"><span class="sum-label">나라이름 유래</span><span class="sum-val">${meaningHtml}</span></div>`);
+    sumParts.push(`<div class="sum-row"><span class="sum-label">나라이름 유래</span><span class="sum-val">${c.meaning}</span></div>`);
   }
   if ((c.nicknames||[]).length) {
     sumParts.push(`<div class="sum-row"><span class="sum-label">별명</span><span class="sum-val">${c.nicknames.join(' · ')}</span></div>`);
