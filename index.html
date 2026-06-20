@@ -57,7 +57,7 @@
   .tag-filter-bar::-webkit-scrollbar { width: 3px; }
   .tag-filter-bar::-webkit-scrollbar-thumb { background: var(--sb-line); }
   #tag-pills { display: flex; flex-direction: column; gap: 4px; }
-  .tag-subhead { font-size: 9px; letter-spacing: 0.08em; color: var(--sb-text-dim); text-transform: uppercase; margin-top: 4px; }
+  .tag-subhead { font-size: 9px; letter-spacing: 0.08em; color: var(--hl); text-transform: uppercase; margin-top: 4px; font-weight: 600; }
   .tag-group { display: flex; flex-wrap: wrap; gap: 3px; }
   #country-list { flex: 1; overflow-y: auto; }
   #country-list::-webkit-scrollbar { width: 3px; }
@@ -102,6 +102,27 @@
   .tag-pill.color-tag { background: var(--paper-dark); color: var(--ink-muted); border: 1px solid var(--border); }
   .tag-pill.color-tag:hover, .tag-pill.color-tag.active { background: var(--hl); color: #00321d; border-color: #00a860; }
   #tb-actions { margin-left: auto; display: flex; gap: 5px; align-items: center; flex-shrink: 0; }
+  /* 우측 상단 플로팅 공지 + 네비 */
+  #notice-float {
+    position: fixed; top: 12px; right: 16px; z-index: 95;
+    max-width: 280px; text-align: right;
+  }
+  #notice-float .nf-text {
+    font-size: 9.5px; line-height: 1.6; color: var(--ink-faint); letter-spacing: 0.01em;
+  }
+  #notice-float .nf-text a { color: var(--ink-faint); font-weight: 400; text-decoration: underline; }
+  #notice-float .nf-text a:hover { color: var(--accent); }
+  #notice-float .nf-keyhint { margin-top: 5px; color: var(--ink-faint); font-weight: 400; white-space: nowrap; }
+  #notice-float .nf-nav { display: flex; gap: 5px; justify-content: flex-end; margin-top: 7px; }
+  .nf-btn {
+    width: 30px; height: 30px; border-radius: 6px;
+    background: rgba(61,25,91,0.08); color: #3d195b; border: 1px solid rgba(61,25,91,0.2);
+    font-size: 14px; line-height: 1; cursor: pointer; font-family: inherit;
+    display: flex; align-items: center; justify-content: center; transition: all 0.15s;
+  }
+  .nf-btn:hover { background: #3d195b; color: #fff; }
+  .nf-dice { font-size: 15px; }
+  .nf-dice:hover { background: var(--hl); }
   .nav-btn {
     border: 1px solid var(--border); background: #fff; border-radius: 3px;
     font-size: 13px; padding: 3px 10px; cursor: pointer; color: var(--ink-muted);
@@ -269,16 +290,8 @@
   <div id="sidebar-header">
     <div>
       <h1 style="cursor:pointer;text-align:center;" onclick="selectRandom()" title="랜덤 나라·지역 보기">🗺️ 세계 상징 사전</h1>
-      <div style="text-align:center;margin:4px 0 2px;">
-        <button id="random-btn" title="랜덤 나라·지역" onclick="selectRandom()" style="background:none;border:none;cursor:pointer;font-size:19px;padding:2px;line-height:1;opacity:0.75;transition:opacity 0.15s;" onmouseover="this.style.opacity=1" onmouseout="this.style.opacity=0.75">🎲</button>
-      </div>
       <p style="font-size:9px;margin-top:5px;letter-spacing:0.03em;text-align:center;">@geotasoo / 20260612</p>
     </div>
-  </div>
-  <div id="notice-wrap">
-  AI가 처리하는 일이다 보니<br>간혹 실수가 발생할 수 있습니다.<br>잘못된 정보를 알려주세요.<br>직접 처리하겠습니다.<br>
-    <a href="https://geotasoo.github.io/test/MAILTO_OR_FORM_URL" target="_blank" rel="noopener" style="font-weight:400;">[응원 및 제보]</a>
-    <div style="margin-top:6px;color:var(--sb-text-dim);">방향키(← → ↑ ↓)로 나라·지역을 넘길 수 있어요.</div>
   </div>
   <div id="search-wrap">
     <input id="search" type="text" placeholder="나라·지역 검색..." />
@@ -308,16 +321,25 @@
     <div class="globe">🌍</div>
   </div>
 
+  <div id="notice-float">
+    <div class="nf-text">
+      AI가 처리하는 일이다 보니 간혹 실수가 발생할 수 있습니다.<br>잘못된 정보를 알려주시면 직접 처리하겠습니다.<br>
+      <a href="https://geotasoo.github.io/test/MAILTO_OR_FORM_URL" target="_blank" rel="noopener">📝 응원 및 제보</a>
+      <div class="nf-keyhint">방향키(← → ↑ ↓)로 나라·지역을 넘길 수 있어요.</div>
+    </div>
+    <div class="nf-nav">
+      <button class="nf-btn" title="이전 (←)" onclick="navCountry(-1)">←</button>
+      <button class="nf-btn" title="다음 (→)" onclick="navCountry(1)">→</button>
+      <button class="nf-btn nf-dice" title="랜덤 (주사위)" onclick="selectRandom()">🎲</button>
+    </div>
+  </div>
+
   <div id="country-page">
     <div id="sticky-head">
     <div id="top-bar">
       <h2 id="tb-name"></h2>
       <span class="en" id="tb-en"></span>
       <div class="tag-list" id="tb-tags"></div>
-      <div id="tb-actions">
-        <button class="nav-btn" title="이전 나라" onclick="navCountry(-1)">←</button>
-        <button class="nav-btn" title="다음 나라" onclick="navCountry(1)">→</button>
-      </div>
     </div>
     <div id="tb-summary"></div>
     <div id="flag-band"></div>
