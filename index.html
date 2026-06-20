@@ -28,7 +28,7 @@
   #sidebar-inner::-webkit-scrollbar-thumb { background: var(--sb-line); }
   /* 2단: 나라 리스트 전용 칸 */
   #country-col {
-    width: var(--col2); height: 100vh; background: var(--sb-bg); color: var(--sb-text);
+    width: var(--col2); height: 100vh; background: #34454f; color: var(--sb-text);
     position: fixed; top: 0; left: var(--col1); display: flex; flex-direction: column;
     z-index: 99; border-left: 1px solid var(--sb-line); overflow: hidden;
   }
@@ -38,7 +38,7 @@
   }
   #country-col-head b { color: var(--hl); font-weight: 600; }
   #sidebar-header { padding: 1rem 0.9rem 0.7rem; border-bottom: 1px solid var(--sb-line); flex-shrink: 0; }
-  #sidebar-header h1 { font-family: 'Noto Serif KR', serif; font-size: 13px; font-weight: 600; letter-spacing: 0.01em; color: #fff; }
+  #sidebar-header h1 { font-family: 'Noto Serif KR', serif; font-size: 14px; font-weight: 600; letter-spacing: -0.01em; color: #fff; line-height: 1.3; word-break: keep-all; }
   #sidebar-header p { font-size: 9px; color: var(--sb-text-dim); margin-top: 2px; letter-spacing: 0.04em; }
   #notice-wrap { padding: 0.55rem 0.9rem; border-bottom: 1px solid var(--sb-line); flex-shrink: 0; font-size: 9px; line-height: 1.5; color: var(--hl); letter-spacing: 0.02em; }
   #notice-wrap a { color: var(--hl); font-weight: 600; text-decoration: underline; white-space: nowrap; }
@@ -54,6 +54,9 @@
   .rtab:hover { background: var(--sb-hover); color: #fff; }
 .rtab.active { background: var(--hl); color: #3a2e00; border-color: #d9a800; }
   .tag-filter-bar { padding: 0.5rem 0.9rem 0.7rem; flex-shrink: 0; border-bottom: 1px solid var(--sb-line); }
+  #tag-pills { display: flex; flex-direction: column; gap: 4px; }
+  .tag-subhead { font-size: 9px; letter-spacing: 0.08em; color: var(--sb-text-dim); text-transform: uppercase; margin-top: 4px; }
+  .tag-group { display: flex; flex-wrap: wrap; gap: 3px; }
   #country-list { flex: 1; overflow-y: auto; }
   #country-list::-webkit-scrollbar { width: 3px; }
   #country-list::-webkit-scrollbar-thumb { background: var(--sb-line); }
@@ -260,19 +263,19 @@
   </button>
   <div id="sidebar-inner">
   <div id="sidebar-header">
-    <div style="display:flex;align-items:center;justify-content:space-between;">
-      <div>
+    <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:4px;">
+      <div style="flex:1;min-width:0;">
         <h1 style="cursor:pointer;" onclick="selectRandom()" title="랜덤 나라 보기">🗺️ 세계 상징 사전</h1>
         <p>WORLD SYMBOL DICTIONARY</p>
         <p style="font-size:9px;margin-top:3px;letter-spacing:0.03em;">@geotasoo / 20260612</p>
       </div>
-      <button id="random-btn" title="랜덤 나라" onclick="selectRandom()" style="background:none;border:none;cursor:pointer;font-size:20px;padding:4px;line-height:1;opacity:0.7;transition:opacity 0.15s;" onmouseover="this.style.opacity=1" onmouseout="this.style.opacity=0.7">🎲</button>
+      <button id="random-btn" title="랜덤 나라" onclick="selectRandom()" style="background:none;border:none;cursor:pointer;font-size:17px;padding:2px;line-height:1;opacity:0.7;transition:opacity 0.15s;flex-shrink:0;" onmouseover="this.style.opacity=1" onmouseout="this.style.opacity=0.7">🎲</button>
     </div>
   </div>
   <div id="notice-wrap">
   AI가 처리하는 일이다 보니<br>간혹 실수가 발생할 수 있습니다.<br>잘못된 정보를 알려주세요.<br>직접 처리하겠습니다.<br>
     <a href="https://geotasoo.github.io/test/MAILTO_OR_FORM_URL" target="_blank" rel="noopener" style="font-weight:400;">[응원 및 제보]</a>
-    <div style="margin-top:6px;color:var(--sb-text-dim);">⌨ 방향키(← →)로 나라를 넘길 수 있어요.</div>
+    <div style="margin-top:6px;color:var(--sb-text-dim);">방향키(← → ↑ ↓)로 나라를 넘길 수 있어요.</div>
   </div>
   <div id="search-wrap">
     <input id="search" type="text" placeholder="나라 이름 검색..." />
@@ -287,8 +290,7 @@
     <button class="rtab" data-region="FIFA 비회원·지역대표" data-label="FIFA 비회원·지역대표">FIFA 비회원·지역대표</button>
   </div>
   <div class="tag-filter-bar">
-    <div style="font-size:10px;letter-spacing:0.08em;color:var(--sb-text-dim);text-transform:uppercase;margin-bottom:6px;">상징과 색으로 찾기</div>
-    <div id="tag-pills" style="display:flex;flex-wrap:wrap;gap:3px;"></div>
+    <div id="tag-pills"></div>
   </div>
   </div>
 </nav>
@@ -489,7 +491,7 @@ async function loadFromSheet() {
     const hi = hashCode ? filtered.findIndex(c => c.code === hashCode) : -1;
     if (hi >= 0) {
       selectCountry(hi);
-      document.querySelectorAll('.country-item')[hi]?.scrollIntoView({block:'nearest'});
+      document.querySelectorAll('.country-item')[hi]?.scrollIntoView({block:"center"});
     } else {
       selectRandom();
     }
@@ -797,20 +799,38 @@ function buildTagFilter() {
   });
   const container = document.getElementById('tag-pills');
   container.innerHTML = '';
-  [...allTags].sort().forEach(tag => {
-    const btn = document.createElement('button');
-    btn.className = 'tag-pill symbol';
-    btn.textContent = tag;
-    btn.onclick = () => toggleTagFilter(tag, 'symbol', btn);
-    container.appendChild(btn);
-  });
+
+  // 색으로 찾기 (위)
+  const colHead = document.createElement('div');
+  colHead.className = 'tag-subhead';
+  colHead.textContent = '색으로 찾기';
+  container.appendChild(colHead);
+  const colWrap = document.createElement('div');
+  colWrap.className = 'tag-group';
   [...allColors].sort().forEach(color => {
     const btn = document.createElement('button');
     btn.className = 'tag-pill color-tag';
     btn.textContent = color;
     btn.onclick = () => toggleTagFilter(color, 'color', btn);
-    container.appendChild(btn);
+    colWrap.appendChild(btn);
   });
+  container.appendChild(colWrap);
+
+  // 상징으로 찾기 (아래)
+  const symHead = document.createElement('div');
+  symHead.className = 'tag-subhead';
+  symHead.textContent = '상징으로 찾기';
+  container.appendChild(symHead);
+  const symWrap = document.createElement('div');
+  symWrap.className = 'tag-group';
+  [...allTags].sort().forEach(tag => {
+    const btn = document.createElement('button');
+    btn.className = 'tag-pill symbol';
+    btn.textContent = tag;
+    btn.onclick = () => toggleTagFilter(tag, 'symbol', btn);
+    symWrap.appendChild(btn);
+  });
+  container.appendChild(symWrap);
 }
 
 function toggleTagFilter(value, type, btn) {
@@ -864,7 +884,7 @@ function selectRandom() {
   applyFilter('', 'all');
   const idx = Math.floor(Math.random() * filtered.length);
   selectCountry(idx);
-  document.querySelectorAll('.country-item')[idx]?.scrollIntoView({block:'nearest'});
+  document.querySelectorAll('.country-item')[idx]?.scrollIntoView({block:"center"});
 }
 
 function goToCode(code) {
@@ -880,7 +900,7 @@ function goToCode(code) {
   }
   if (i >= 0) {
     selectCountry(i);
-    document.querySelectorAll('.country-item')[i]?.scrollIntoView({block:'nearest'});
+    document.querySelectorAll('.country-item')[i]?.scrollIntoView({block:"center"});
   }
 }
 
