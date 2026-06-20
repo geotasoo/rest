@@ -102,27 +102,35 @@
   .tag-pill.color-tag { background: var(--paper-dark); color: var(--ink-muted); border: 1px solid var(--border); }
   .tag-pill.color-tag:hover, .tag-pill.color-tag.active { background: var(--hl); color: #00321d; border-color: #00a860; }
   #tb-actions { margin-left: auto; display: flex; gap: 5px; align-items: center; flex-shrink: 0; }
-  /* 우측 상단 플로팅 공지 + 네비 */
+  /* 우측 상단 플로팅: 평소엔 버튼바, 호버 시 공지 펼침 */
   #notice-float {
     position: fixed; top: 12px; right: 16px; z-index: 95;
-    max-width: 280px; text-align: right;
+    display: flex; flex-direction: column; align-items: flex-end; gap: 6px;
   }
-  #notice-float .nf-text {
-    font-size: 9.5px; line-height: 1.6; color: var(--ink-faint); letter-spacing: 0.01em;
-  }
-  #notice-float .nf-text a { color: var(--ink-faint); font-weight: 400; text-decoration: underline; }
-  #notice-float .nf-text a:hover { color: var(--accent); }
-  #notice-float .nf-keyhint { margin-top: 5px; color: var(--ink-faint); font-weight: 400; white-space: nowrap; }
-  #notice-float .nf-nav { display: flex; gap: 5px; justify-content: flex-end; margin-top: 7px; }
+  #notice-float .nf-bar { display: flex; gap: 5px; }
   .nf-btn {
     width: 30px; height: 30px; border-radius: 6px;
-    background: rgba(61,25,91,0.08); color: #3d195b; border: 1px solid rgba(61,25,91,0.2);
+    background: rgba(61,25,91,0.10); color: #3d195b; border: 1px solid rgba(61,25,91,0.2);
     font-size: 14px; line-height: 1; cursor: pointer; font-family: inherit;
     display: flex; align-items: center; justify-content: center; transition: all 0.15s;
   }
   .nf-btn:hover { background: #3d195b; color: #fff; }
   .nf-dice { font-size: 15px; }
   .nf-dice:hover { background: var(--hl); }
+  .nf-info { font-size: 15px; font-weight: 700; }
+  /* 공지 패널: 평소 숨김, 바에 호버하면 표시 */
+  #notice-float .nf-panel {
+    max-width: 250px; text-align: right; font-size: 9.5px; line-height: 1.6;
+    color: var(--ink-faint); letter-spacing: 0.01em;
+    background: rgba(255,255,255,0.96); border: 1px solid var(--border); border-radius: 8px;
+    padding: 9px 12px; box-shadow: 0 4px 16px rgba(0,0,0,0.12);
+    opacity: 0; visibility: hidden; transform: translateY(-4px); transition: all 0.18s;
+    pointer-events: none;
+  }
+  #notice-float:hover .nf-panel, #notice-float.show-panel .nf-panel { opacity: 1; visibility: visible; transform: translateY(0); pointer-events: auto; }
+  #notice-float .nf-panel a { color: var(--accent); font-weight: 500; text-decoration: underline; display: inline-block; margin-top: 4px; }
+  #notice-float .nf-panel a:hover { color: var(--ink); }
+  #notice-float .nf-keyhint { margin-top: 5px; color: var(--ink-faint); font-weight: 400; }
   .nav-btn {
     border: 1px solid var(--border); background: #fff; border-radius: 3px;
     font-size: 13px; padding: 3px 10px; cursor: pointer; color: var(--ink-muted);
@@ -322,15 +330,16 @@
   </div>
 
   <div id="notice-float">
-    <div class="nf-text">
-      AI가 처리하는 일이다 보니 간혹 실수가 발생할 수 있습니다.<br>잘못된 정보를 알려주시면 직접 처리하겠습니다.<br>
-      <a href="https://geotasoo.github.io/test/MAILTO_OR_FORM_URL" target="_blank" rel="noopener">📝 응원 및 제보</a>
-      <div class="nf-keyhint">방향키(← → ↑ ↓)로 나라·지역을 넘길 수 있어요.</div>
-    </div>
-    <div class="nf-nav">
+    <div class="nf-bar">
+      <button class="nf-btn nf-info" title="안내 보기" aria-label="안내" onclick="document.getElementById('notice-float').classList.toggle('show-panel')">ⓘ</button>
       <button class="nf-btn" title="이전 (←)" onclick="navCountry(-1)">←</button>
       <button class="nf-btn" title="다음 (→)" onclick="navCountry(1)">→</button>
       <button class="nf-btn nf-dice" title="랜덤 (주사위)" onclick="selectRandom()">🎲</button>
+    </div>
+    <div class="nf-panel">
+      AI가 처리하는 일이다 보니 간혹 실수가 발생할 수 있습니다.<br>잘못된 정보를 알려주시면 직접 처리하겠습니다.
+      <a href="https://geotasoo.github.io/test/MAILTO_OR_FORM_URL" target="_blank" rel="noopener">📝 응원 및 제보</a>
+      <div class="nf-keyhint">방향키(← → ↑ ↓)로 나라·지역을 넘길 수 있어요.</div>
     </div>
   </div>
 
@@ -731,9 +740,9 @@ function renderPage(c) {
 
   document.getElementById('tb-name').textContent = c.name;
   document.getElementById('tb-en').textContent = c.en;
-  const tagHtml = `<span class="tag-pill region">${c.region}</span>`
-    + (c.tags||[]).map(t=>`<span class="tag-pill symbol" style="cursor:default">${t}</span>`).join('')
-    + (c.colors||[]).map(t=>`<span class="tag-pill color-tag" style="cursor:default">${t}</span>`).join('');
+  const tagHtml = `<span class="tag-pill region" onclick="filterByRegionTag('${c.region.replace(/'/g,"\\'")}')" style="cursor:pointer" title="${c.region} 보기">${c.region}</span>`
+    + (c.tags||[]).map(t=>`<span class="tag-pill symbol" onclick="filterByTagPill('${t.replace(/'/g,"\\'")}','symbol')" style="cursor:pointer" title="${t} 상징 보기">${t}</span>`).join('')
+    + (c.colors||[]).map(t=>`<span class="tag-pill color-tag" onclick="filterByTagPill('${t.replace(/'/g,"\\'")}','color')" style="cursor:pointer" title="${t} 색 보기">${t}</span>`).join('');
   document.getElementById('tb-tags').innerHTML = tagHtml;
 
   const sumParts = [];
@@ -881,6 +890,29 @@ function switchMobileTab(tab, btn) {
   else if (tab === 'flag') document.getElementById('col-flag').classList.add('mobile-active');
   else if (tab === 'emblem') document.getElementById('col-emblem').classList.add('mobile-active');
   else if (tab === 'football') document.getElementById('col-football').classList.add('mobile-active');
+}
+
+function filterByRegionTag(region) {
+  // 상단 지역 태그 클릭 → 해당 지역 탭으로
+  document.getElementById('search').value = '';
+  activeTagFilter = null;
+  document.querySelectorAll('#tag-pills .tag-pill').forEach(b => b.classList.remove('active'));
+  currentRegion = region;
+  document.querySelectorAll('.rtab').forEach(b => b.classList.toggle('active', b.dataset.region === region));
+  applyFilter('', region);
+}
+
+function filterByTagPill(value, type) {
+  // 상단 상징/색 태그 클릭 → 사이드바 필터와 동일하게
+  document.getElementById('search').value = '';
+  currentRegion = 'all';
+  document.querySelectorAll('.rtab').forEach(b => b.classList.toggle('active', b.dataset.region === 'all'));
+  activeTagFilter = { value, type };
+  // 사이드바 필터 버튼 하이라이트 동기화
+  document.querySelectorAll('#tag-pills .tag-pill').forEach(b => {
+    b.classList.toggle('active', b.textContent === value);
+  });
+  applyFilter('', 'all');
 }
 
 function filterByCultureTag(tag) {
