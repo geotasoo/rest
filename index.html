@@ -138,9 +138,11 @@
   }
   .nav-btn:hover { background: var(--paper-dark); }
   .tag-filter-bar .tag-pill.symbol { background: var(--sb-hover); color: var(--sb-text); border: 1px solid var(--sb-line); }
-  .tag-filter-bar .tag-pill.symbol:hover, .tag-filter-bar .tag-pill.symbol.active { background: var(--hl); color: #00321d; border-color: #00a860; }
+  .tag-filter-bar .tag-pill.symbol:hover { border-color: var(--hl); }
+  .tag-filter-bar .tag-pill.symbol.active { background: var(--hl); color: #00321d; border-color: #00a860; }
   .tag-filter-bar .tag-pill.color-tag { background: var(--sb-hover); color: var(--sb-text); border: 1px solid var(--sb-line); }
-  .tag-filter-bar .tag-pill.color-tag:hover, .tag-filter-bar .tag-pill.color-tag.active { background: var(--hl); color: #00321d; border-color: #00a860; }
+  .tag-filter-bar .tag-pill.color-tag:hover { border-color: var(--hl); }
+  .tag-filter-bar .tag-pill.color-tag.active { background: var(--hl); color: #00321d; border-color: #00a860; }
   #content-cols { flex: 1; align-items: start; }
   .content-col { padding: 1.75rem 1.75rem 4rem; border-right: 1px solid var(--border); min-width: 0; }
   .content-col:last-child { border-right: none; }
@@ -190,7 +192,7 @@
   .anthem-video iframe { display: block; width: 100%; aspect-ratio: 16 / 9; border: none; }
   #col-info {
     background: var(--col-info-bg); color: #1e2a35; padding: 2rem 1.5rem 4rem; min-height: 100vh;
-    border-right: 1px solid var(--border); min-width: 220px; max-width: 300px; width: 300px; flex-shrink: 0;
+    border-right: 1px solid var(--border); min-width: 480px; max-width: 480px; width: 480px; flex-shrink: 0;
   }
   .info-meaning { font-size: 12px; color: var(--ink-muted); margin-top: 0; line-height: 1.6; }
   .info-meaning::before { content: '뜻'; display: block; color: var(--ink-faint); font-weight: 500; font-size: 9px; letter-spacing: 0.1em; margin-bottom: 5px; }
@@ -825,12 +827,16 @@ document.querySelectorAll('.rtab').forEach(btn => {
 });
 
 function buildTagFilter() {
-  const allTags = new Set();
-  const allColors = new Set();
+  const tagCount = {};
+  const colorCount = {};
   COUNTRIES.forEach(c => {
-    (c.tags||[]).forEach(t => allTags.add(t));
-    (c.colors||[]).forEach(t => allColors.add(t));
+    (c.tags||[]).forEach(t => tagCount[t] = (tagCount[t]||0) + 1);
+    (c.colors||[]).forEach(t => colorCount[t] = (colorCount[t]||0) + 1);
   });
+  // 빈도 내림차순 (동률이면 가나다)
+  const byFreq = (counts) => Object.keys(counts).sort((a,b) => counts[b]-counts[a] || a.localeCompare(b,'ko'));
+  const sortedTags = byFreq(tagCount);
+  const sortedColors = byFreq(colorCount);
   const container = document.getElementById('tag-pills');
   container.innerHTML = '';
 
@@ -841,7 +847,7 @@ function buildTagFilter() {
   container.appendChild(colHead);
   const colWrap = document.createElement('div');
   colWrap.className = 'tag-group';
-  [...allColors].sort().forEach(color => {
+  sortedColors.forEach(color => {
     const btn = document.createElement('button');
     btn.className = 'tag-pill color-tag';
     btn.textContent = color;
@@ -857,7 +863,7 @@ function buildTagFilter() {
   container.appendChild(symHead);
   const symWrap = document.createElement('div');
   symWrap.className = 'tag-group';
-  [...allTags].sort().forEach(tag => {
+  sortedTags.forEach(tag => {
     const btn = document.createElement('button');
     btn.className = 'tag-pill symbol';
     btn.textContent = tag;
