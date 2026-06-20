@@ -13,9 +13,9 @@
     --accent: #3d6b8a; --accent-light: #ddeef7;
     --border: #d0d8df; --col1: 160px; --col2: 190px;
     --col-flag-bg: #ffffff; --col-emblem-bg: #ffffff; --col-football-bg: #ffffff; --col-info-bg: #ffffff;
-    --sb-bg: #2b3a45; --sb-line: #3e5160; --sb-hover: #3e5160;
-    --sb-text: #e8eef4; --sb-text-sub: #a8bac8; --sb-text-dim: #8da1b0;
-    --hl: #f5c542;
+    --sb-bg: #37003C; --sb-line: #5a2860; --sb-hover: #52125a;
+    --sb-text: #f0e9f2; --sb-text-sub: #c4a8cc; --sb-text-dim: #a888b0;
+    --hl: #00d97e;
   }
   body { font-family: 'Noto Sans KR', sans-serif; background: var(--paper); color: var(--ink); min-height: 100vh; display: flex; }
   #sidebar {
@@ -23,20 +23,20 @@
     position: fixed; top: 0; left: 0; display: flex; flex-direction: column;
     z-index: 100; overflow: hidden;
   }
-  #sidebar-inner { flex: 1; display: flex; flex-direction: column; min-height: 0; overflow-y: auto; }
+  #sidebar-inner { flex: 1; display: flex; flex-direction: column; min-height: 0; overflow: hidden; }
   #sidebar-inner::-webkit-scrollbar { width: 3px; }
   #sidebar-inner::-webkit-scrollbar-thumb { background: var(--sb-line); }
   /* 2단: 나라 리스트 전용 칸 */
   #country-col {
-    width: var(--col2); height: 100vh; background: #34454f; color: var(--sb-text);
+    width: var(--col2); height: 100vh; background: #e8e6ec; color: #3d195b;
     position: fixed; top: 0; left: var(--col1); display: flex; flex-direction: column;
     z-index: 99; border-left: 1px solid var(--sb-line); overflow: hidden;
   }
   #country-col-head {
-    padding: 0.7rem 1rem; border-bottom: 1px solid var(--sb-line); flex-shrink: 0;
-    font-size: 10px; letter-spacing: 0.08em; color: var(--sb-text-dim); text-transform: uppercase;
+    padding: 0.7rem 1rem; border-bottom: 1px solid #d4cede; flex-shrink: 0;
+    font-size: 10px; letter-spacing: 0.08em; color: #8a7a9a; text-transform: uppercase;
   }
-  #country-col-head b { color: var(--hl); font-weight: 600; }
+  #country-col-head b { color: #3d195b; font-weight: 600; }
   #sidebar-header { padding: 1rem 0.9rem 0.7rem; border-bottom: 1px solid var(--sb-line); flex-shrink: 0; }
   #sidebar-header h1 { font-family: 'Noto Serif KR', serif; font-size: 14px; font-weight: 600; letter-spacing: -0.01em; color: #fff; line-height: 1.3; word-break: keep-all; }
   #sidebar-header p { font-size: 9px; color: var(--sb-text-dim); margin-top: 2px; letter-spacing: 0.04em; }
@@ -52,8 +52,10 @@
   #region-tabs { display: flex; flex-wrap: wrap; gap: 3px; padding: 0.5rem 0.9rem; border-bottom: 1px solid var(--sb-line); flex-shrink: 0; }
   .rtab { font-size: 10px; padding: 2px 6px; border-radius: 2px; cursor: pointer; background: transparent; color: #dbe3ea; border: 1px solid #506573; transition: all 0.15s; font-family: inherit; }
   .rtab:hover { background: var(--sb-hover); color: #fff; }
-.rtab.active { background: var(--hl); color: #3a2e00; border-color: #d9a800; }
-  .tag-filter-bar { padding: 0.5rem 0.9rem 0.7rem; flex-shrink: 0; border-bottom: 1px solid var(--sb-line); }
+.rtab.active { background: var(--hl); color: #00321d; border-color: #00a860; }
+  .tag-filter-bar { padding: 0.5rem 0.9rem 0.7rem; flex: 1; min-height: 0; overflow-y: auto; border-bottom: none; }
+  .tag-filter-bar::-webkit-scrollbar { width: 3px; }
+  .tag-filter-bar::-webkit-scrollbar-thumb { background: var(--sb-line); }
   #tag-pills { display: flex; flex-direction: column; gap: 4px; }
   .tag-subhead { font-size: 9px; letter-spacing: 0.08em; color: var(--sb-text-dim); text-transform: uppercase; margin-top: 4px; }
   .tag-group { display: flex; flex-wrap: wrap; gap: 3px; }
@@ -61,9 +63,11 @@
   #country-list::-webkit-scrollbar { width: 3px; }
   #country-list::-webkit-scrollbar-thumb { background: var(--sb-line); }
   .country-item { display: flex; align-items: center; gap: 7px; padding: 6px 1.1rem; cursor: pointer; transition: background 0.1s; border-left: 2px solid transparent; }
-  .country-item:hover { background: var(--sb-hover); }
-  .country-item.active { background: var(--sb-hover); border-left-color: #7db4d8; }
-  .ci-flag { width: 20px; height: 13px; object-fit: cover; border-radius: 1px; flex-shrink: 0; border: 1px solid #1c262e; }
+  #country-col .country-item:hover { background: #dcd6e6; }
+  #country-col .country-item.active { background: #d2c8e0; border-left-color: #3d195b; }
+  .ci-flag { width: 20px; height: 13px; object-fit: cover; border-radius: 1px; flex-shrink: 0; border: 1px solid #b8aec8; }
+  #country-col .ci-name { color: #3d195b; }
+  #country-col .ci-name small { color: #8a7a9a; }
   .ci-name { font-size: 11px; color: var(--sb-text); flex: 1; line-height: 1.3; font-weight: 400; }
   .ci-name small { display: block; font-size: 9px; color: var(--sb-text-sub); margin-top: 1px; }
   #main { margin-left: calc(var(--col1) + var(--col2)); flex: 1; display: flex; flex-direction: column; min-height: 100vh; }
@@ -81,9 +85,9 @@
   .sum-row .sum-label { color: var(--ink-faint); font-size: 10px; font-weight: 500; flex-shrink: 0; width: 78px; padding-top: 1px; }
   .sum-row .sum-val { color: var(--ink); flex: 1; min-width: 0; }
   .sum-row .sum-val .dot2 { display: block; }
-  .sum-tags { display: flex; flex-wrap: wrap; gap: 4px 9px; }
-  .sum-tags .culture-tag { font-size: 12px; color: var(--accent); cursor: pointer; transition: color 0.15s; }
-  .sum-tags .culture-tag:hover { color: var(--ink); text-decoration: underline; }
+  .sum-tags { display: flex; flex-wrap: wrap; gap: 5px 5px; }
+  .sum-tags .culture-tag { font-size: 11px; color: var(--accent); cursor: pointer; transition: all 0.15s; background: var(--accent-light); border: 1px solid #cfe3ef; border-radius: 99px; padding: 2px 9px; line-height: 1.6; }
+  .sum-tags .culture-tag:hover { background: var(--accent); color: #fff; border-color: var(--accent); }
   #flag-band {
     height: 4px; width: 100%; background: var(--border);
     transition: background 0.4s ease;
@@ -94,9 +98,9 @@
   .tag-pill { font-size: 10px; padding: 2px 8px; border-radius: 99px; cursor: pointer; transition: all 0.15s; white-space: nowrap; }
   .tag-pill.region { background: var(--accent-light); color: var(--accent); border: 1px solid #e8d0cb; cursor: default; }
   .tag-pill.symbol { background: #e4ecf2; color: #2d5470; border: 1px solid #b8cdd9; }
-  .tag-pill.symbol:hover, .tag-pill.symbol.active { background: var(--hl); color: #3a2e00; border-color: #d9a800; }
+  .tag-pill.symbol:hover, .tag-pill.symbol.active { background: var(--hl); color: #00321d; border-color: #00a860; }
   .tag-pill.color-tag { background: var(--paper-dark); color: var(--ink-muted); border: 1px solid var(--border); }
-  .tag-pill.color-tag:hover, .tag-pill.color-tag.active { background: var(--hl); color: #3a2e00; border-color: #d9a800; }
+  .tag-pill.color-tag:hover, .tag-pill.color-tag.active { background: var(--hl); color: #00321d; border-color: #00a860; }
   #tb-actions { margin-left: auto; display: flex; gap: 5px; align-items: center; flex-shrink: 0; }
   .nav-btn {
     border: 1px solid var(--border); background: #fff; border-radius: 3px;
@@ -105,9 +109,9 @@
   }
   .nav-btn:hover { background: var(--paper-dark); }
   .tag-filter-bar .tag-pill.symbol { background: var(--sb-hover); color: var(--sb-text); border: 1px solid var(--sb-line); }
-  .tag-filter-bar .tag-pill.symbol:hover, .tag-filter-bar .tag-pill.symbol.active { background: var(--hl); color: #3a2e00; border-color: #d9a800; }
+  .tag-filter-bar .tag-pill.symbol:hover, .tag-filter-bar .tag-pill.symbol.active { background: var(--hl); color: #00321d; border-color: #00a860; }
   .tag-filter-bar .tag-pill.color-tag { background: var(--sb-hover); color: var(--sb-text); border: 1px solid var(--sb-line); }
-  .tag-filter-bar .tag-pill.color-tag:hover, .tag-filter-bar .tag-pill.color-tag.active { background: var(--hl); color: #3a2e00; border-color: #d9a800; }
+  .tag-filter-bar .tag-pill.color-tag:hover, .tag-filter-bar .tag-pill.color-tag.active { background: var(--hl); color: #00321d; border-color: #00a860; }
   #content-cols { flex: 1; align-items: start; }
   .content-col { padding: 1.75rem 1.75rem 4rem; border-right: 1px solid var(--border); min-width: 0; }
   .content-col:last-child { border-right: none; }
@@ -258,27 +262,26 @@
 
 <nav id="sidebar">
   <button id="mobile-list-toggle" onclick="toggleMobileList()">
-    <span id="mlt-label">≡ 나라 선택</span>
+    <span id="mlt-label">≡ 나라·지역 선택</span>
     <span id="mlt-current"></span>
   </button>
   <div id="sidebar-inner">
   <div id="sidebar-header">
-    <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:4px;">
-      <div style="flex:1;min-width:0;">
-        <h1 style="cursor:pointer;" onclick="selectRandom()" title="랜덤 나라 보기">🗺️ 세계 상징 사전</h1>
-        <p>WORLD SYMBOL DICTIONARY</p>
-        <p style="font-size:9px;margin-top:3px;letter-spacing:0.03em;">@geotasoo / 20260612</p>
+    <div>
+      <h1 style="cursor:pointer;text-align:center;" onclick="selectRandom()" title="랜덤 나라·지역 보기">🗺️ 세계 상징 사전</h1>
+      <div style="text-align:center;margin:4px 0 2px;">
+        <button id="random-btn" title="랜덤 나라·지역" onclick="selectRandom()" style="background:none;border:none;cursor:pointer;font-size:19px;padding:2px;line-height:1;opacity:0.75;transition:opacity 0.15s;" onmouseover="this.style.opacity=1" onmouseout="this.style.opacity=0.75">🎲</button>
       </div>
-      <button id="random-btn" title="랜덤 나라" onclick="selectRandom()" style="background:none;border:none;cursor:pointer;font-size:17px;padding:2px;line-height:1;opacity:0.7;transition:opacity 0.15s;flex-shrink:0;" onmouseover="this.style.opacity=1" onmouseout="this.style.opacity=0.7">🎲</button>
+      <p style="font-size:9px;margin-top:5px;letter-spacing:0.03em;text-align:center;">@geotasoo / 20260612</p>
     </div>
   </div>
   <div id="notice-wrap">
   AI가 처리하는 일이다 보니<br>간혹 실수가 발생할 수 있습니다.<br>잘못된 정보를 알려주세요.<br>직접 처리하겠습니다.<br>
     <a href="https://geotasoo.github.io/test/MAILTO_OR_FORM_URL" target="_blank" rel="noopener" style="font-weight:400;">[응원 및 제보]</a>
-    <div style="margin-top:6px;color:var(--sb-text-dim);">방향키(← → ↑ ↓)로 나라를 넘길 수 있어요.</div>
+    <div style="margin-top:6px;color:var(--sb-text-dim);">방향키(← → ↑ ↓)로 나라·지역을 넘길 수 있어요.</div>
   </div>
   <div id="search-wrap">
-    <input id="search" type="text" placeholder="나라 이름 검색..." />
+    <input id="search" type="text" placeholder="나라·지역 검색..." />
   </div>
   <div id="region-tabs">
     <button class="rtab active" data-region="all" data-label="전체">전체</button>
@@ -296,7 +299,7 @@
 </nav>
 
 <aside id="country-col">
-  <div id="country-col-head"><b id="ccount">전체</b> 나라 목록</div>
+  <div id="country-col-head"><b id="ccount">전체</b> 나라·지역 목록</div>
   <div id="country-list"></div>
 </aside>
 
@@ -723,7 +726,7 @@ function renderPage(c) {
     sumParts.push(`<div class="sum-row"><span class="sum-label">주요 도시</span><span class="sum-val">${cities}</span></div>`);
   }
   if ((c.cultureTags||[]).length) {
-    const tags = c.cultureTags.map(t => `<span class="culture-tag" onclick="filterByCultureTag('${t.replace(/'/g,"\\'")}')" title="#${t} 태그가 있는 나라 보기">#${t}</span>`).join('');
+    const tags = c.cultureTags.map(t => `<span class="culture-tag" onclick="filterByCultureTag('${t.replace(/'/g,"\\'")}')" title="#${t} 태그가 있는 나라·지역 보기">#${t}</span>`).join('');
     sumParts.push(`<div class="sum-row"><span class="sum-label">&nbsp;</span><span class="sum-val sum-tags">${tags}</span></div>`);
   }
   document.getElementById('tb-summary').innerHTML = sumParts.join('');
