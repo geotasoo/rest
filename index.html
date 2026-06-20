@@ -86,7 +86,7 @@
   .sum-row .sum-val { color: var(--ink); flex: 1; min-width: 0; }
   .sum-row .sum-val .dot2 { display: block; }
   .sum-tags { display: flex; flex-wrap: wrap; gap: 5px 5px; }
-  .sum-tags .culture-tag { font-size: 11px; color: var(--accent); cursor: pointer; transition: all 0.15s; background: var(--accent-light); border: 1px solid #cfe3ef; border-radius: 99px; padding: 2px 9px; line-height: 1.6; }
+  .sum-tags .culture-tag { font-size: 10px; color: var(--accent); cursor: pointer; transition: all 0.15s; background: var(--accent-light); border: 1px solid #cfe3ef; border-radius: 99px; padding: 2px 8px; line-height: 1.6; white-space: nowrap; }
   .sum-tags .culture-tag:hover { background: var(--accent); color: #fff; border-color: var(--accent); }
   #flag-band {
     height: 4px; width: 100%; background: var(--border);
@@ -105,9 +105,8 @@
   /* 우측 상단 플로팅: 평소엔 버튼바, 호버 시 공지 펼침 */
   #notice-float {
     position: fixed; top: 12px; right: 16px; z-index: 95;
-    display: flex; flex-direction: column; align-items: flex-end; gap: 6px;
   }
-  #notice-float .nf-bar { display: flex; gap: 5px; }
+  #notice-float .nf-bar { display: flex; gap: 5px; justify-content: flex-end; }
   .nf-btn {
     width: 30px; height: 30px; border-radius: 6px;
     background: rgba(61,25,91,0.10); color: #3d195b; border: 1px solid rgba(61,25,91,0.2);
@@ -118,16 +117,18 @@
   .nf-dice { font-size: 15px; }
   .nf-dice:hover { background: var(--hl); }
   .nf-info { font-size: 15px; font-weight: 700; }
-  /* 공지 패널: 평소 숨김, 바에 호버하면 표시 */
+  /* 공지 패널: 절대배치라 공간 안 먹음, ⓘ 호버/클릭 시 표시 */
   #notice-float .nf-panel {
-    max-width: 250px; text-align: right; font-size: 9.5px; line-height: 1.6;
+    position: absolute; top: 38px; right: 0;
+    width: 250px; text-align: right; font-size: 9.5px; line-height: 1.6;
     color: var(--ink-faint); letter-spacing: 0.01em;
-    background: rgba(255,255,255,0.96); border: 1px solid var(--border); border-radius: 8px;
+    background: rgba(255,255,255,0.97); border: 1px solid var(--border); border-radius: 8px;
     padding: 9px 12px; box-shadow: 0 4px 16px rgba(0,0,0,0.12);
     opacity: 0; visibility: hidden; transform: translateY(-4px); transition: all 0.18s;
     pointer-events: none;
   }
-  #notice-float:hover .nf-panel, #notice-float.show-panel .nf-panel { opacity: 1; visibility: visible; transform: translateY(0); pointer-events: auto; }
+  #notice-float:hover .nf-panel,
+  #notice-float.show-panel .nf-panel { opacity: 1; visibility: visible; transform: translateY(0); pointer-events: auto; }
   #notice-float .nf-panel a { color: var(--accent); font-weight: 500; text-decoration: underline; display: inline-block; margin-top: 4px; }
   #notice-float .nf-panel a:hover { color: var(--ink); }
   #notice-float .nf-keyhint { margin-top: 5px; color: var(--ink-faint); font-weight: 400; }
@@ -339,7 +340,7 @@
       <button class="nf-btn nf-dice" title="랜덤 (주사위)" onclick="selectRandom()">🎲</button>
     </div>
     <div class="nf-panel">
-      AI가 처리하는 일이다 보니 간혹 실수가 발생할 수 있습니다.<br>잘못된 정보를 알려주시면 직접 처리하겠습니다.
+      AI가 처리하는 일이다 보니<br>간혹 실수가 발생할 수 있습니다.<br>잘못된 정보를 알려주시면 직접 처리하겠습니다.
       <a href="https://geotasoo.github.io/test/MAILTO_OR_FORM_URL" target="_blank" rel="noopener">📝 응원 및 제보</a>
       <div class="nf-keyhint">방향키(← → ↑ ↓)로 나라·지역을 넘길 수 있어요.</div>
     </div>
