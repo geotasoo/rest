@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>세계 상징 사전</title>
+<title>🗺️ 세계 상징 사전</title>
 <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@400;600&family=Noto+Sans+KR:wght@300;400;500&display=swap" rel="stylesheet">
 <style>
   *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
@@ -11,7 +11,7 @@
     --ink: #1e2a35; --ink-muted: #526070; --ink-faint: #8a9aa8;
     --paper: #ffffff; --paper-dark: #f4f6f8;
     --accent: #3d6b8a; --accent-light: #ddeef7;
-    --border: #d0d8df; --col1: 210px;
+    --border: #d0d8df; --col1: 160px; --col2: 190px;
     --col-flag-bg: #ffffff; --col-emblem-bg: #ffffff; --col-football-bg: #ffffff; --col-info-bg: #ffffff;
     --sb-bg: #2b3a45; --sb-line: #3e5160; --sb-hover: #3e5160;
     --sb-text: #e8eef4; --sb-text-sub: #a8bac8; --sb-text-dim: #8da1b0;
@@ -23,24 +23,37 @@
     position: fixed; top: 0; left: 0; display: flex; flex-direction: column;
     z-index: 100; overflow: hidden;
   }
-  #sidebar-inner { flex: 1; display: flex; flex-direction: column; min-height: 0; overflow: hidden; }
-  #sidebar-header { padding: 1.1rem 1.1rem 0.8rem; border-bottom: 1px solid var(--sb-line); flex-shrink: 0; }
-  #sidebar-header h1 { font-family: 'Noto Serif KR', serif; font-size: 14px; font-weight: 600; letter-spacing: 0.02em; color: #fff; }
-  #sidebar-header p { font-size: 10px; color: var(--sb-text-dim); margin-top: 2px; letter-spacing: 0.05em; }
-  #notice-wrap { padding: 0.6rem 1.1rem; border-bottom: 1px solid var(--sb-line); flex-shrink: 0; font-size: 9px; line-height: 1.5; color: var(--hl); letter-spacing: 0.02em; }
+  #sidebar-inner { flex: 1; display: flex; flex-direction: column; min-height: 0; overflow-y: auto; }
+  #sidebar-inner::-webkit-scrollbar { width: 3px; }
+  #sidebar-inner::-webkit-scrollbar-thumb { background: var(--sb-line); }
+  /* 2단: 나라 리스트 전용 칸 */
+  #country-col {
+    width: var(--col2); height: 100vh; background: var(--sb-bg); color: var(--sb-text);
+    position: fixed; top: 0; left: var(--col1); display: flex; flex-direction: column;
+    z-index: 99; border-left: 1px solid var(--sb-line); overflow: hidden;
+  }
+  #country-col-head {
+    padding: 0.7rem 1rem; border-bottom: 1px solid var(--sb-line); flex-shrink: 0;
+    font-size: 10px; letter-spacing: 0.08em; color: var(--sb-text-dim); text-transform: uppercase;
+  }
+  #country-col-head b { color: var(--hl); font-weight: 600; }
+  #sidebar-header { padding: 1rem 0.9rem 0.7rem; border-bottom: 1px solid var(--sb-line); flex-shrink: 0; }
+  #sidebar-header h1 { font-family: 'Noto Serif KR', serif; font-size: 13px; font-weight: 600; letter-spacing: 0.01em; color: #fff; }
+  #sidebar-header p { font-size: 9px; color: var(--sb-text-dim); margin-top: 2px; letter-spacing: 0.04em; }
+  #notice-wrap { padding: 0.55rem 0.9rem; border-bottom: 1px solid var(--sb-line); flex-shrink: 0; font-size: 9px; line-height: 1.5; color: var(--hl); letter-spacing: 0.02em; }
   #notice-wrap a { color: var(--hl); font-weight: 600; text-decoration: underline; white-space: nowrap; }
-  #search-wrap { padding: 0.6rem 1.1rem; border-bottom: 1px solid var(--sb-line); flex-shrink: 0; }
+  #search-wrap { padding: 0.55rem 0.9rem; border-bottom: 1px solid var(--sb-line); flex-shrink: 0; }
   #search {
     width: 100%; background: var(--sb-hover); border: 1px solid var(--sb-line); border-radius: 3px;
     color: #fff; font-size: 12px; padding: 5px 9px; font-family: inherit; outline: none;
   }
   #search::placeholder { color: var(--sb-text-dim); }
   #search:focus { border-color: var(--accent); }
-  #region-tabs { display: flex; flex-wrap: wrap; gap: 3px; padding: 0.5rem 1.1rem; border-bottom: 1px solid var(--sb-line); flex-shrink: 0; }
+  #region-tabs { display: flex; flex-wrap: wrap; gap: 3px; padding: 0.5rem 0.9rem; border-bottom: 1px solid var(--sb-line); flex-shrink: 0; }
   .rtab { font-size: 10px; padding: 2px 6px; border-radius: 2px; cursor: pointer; background: transparent; color: #dbe3ea; border: 1px solid #506573; transition: all 0.15s; font-family: inherit; }
   .rtab:hover { background: var(--sb-hover); color: #fff; }
 .rtab.active { background: var(--hl); color: #3a2e00; border-color: #d9a800; }
-  .tag-filter-bar { padding: 0.5rem 1.1rem; border-bottom: 1px solid var(--sb-line); flex-shrink: 0; }
+  .tag-filter-bar { padding: 0.5rem 0.9rem 0.7rem; flex-shrink: 0; border-bottom: 1px solid var(--sb-line); }
   #country-list { flex: 1; overflow-y: auto; }
   #country-list::-webkit-scrollbar { width: 3px; }
   #country-list::-webkit-scrollbar-thumb { background: var(--sb-line); }
@@ -50,7 +63,7 @@
   .ci-flag { width: 20px; height: 13px; object-fit: cover; border-radius: 1px; flex-shrink: 0; border: 1px solid #1c262e; }
   .ci-name { font-size: 11px; color: var(--sb-text); flex: 1; line-height: 1.3; font-weight: 400; }
   .ci-name small { display: block; font-size: 9px; color: var(--sb-text-sub); margin-top: 1px; }
-  #main { margin-left: var(--col1); flex: 1; display: flex; flex-direction: column; min-height: 100vh; }
+  #main { margin-left: calc(var(--col1) + var(--col2)); flex: 1; display: flex; flex-direction: column; min-height: 100vh; }
   #welcome { display: flex; flex-direction: column; align-items: center; justify-content: center; flex: 1; padding: 3rem; text-align: center; }
   #welcome .globe { font-size: 52px; opacity: 0.4; }
   #country-page { display: none; flex-direction: column; flex: 1; }
@@ -66,7 +79,8 @@
   .sum-row .sum-val { color: var(--ink); flex: 1; min-width: 0; }
   .sum-row .sum-val .dot2 { display: block; }
   .sum-tags { display: flex; flex-wrap: wrap; gap: 4px 9px; }
-  .sum-tags .culture-tag { font-size: 12px; color: var(--accent); }
+  .sum-tags .culture-tag { font-size: 12px; color: var(--accent); cursor: pointer; transition: color 0.15s; }
+  .sum-tags .culture-tag:hover { color: var(--ink); text-decoration: underline; }
   #flag-band {
     height: 4px; width: 100%; background: var(--border);
     transition: background 0.4s ease;
@@ -100,7 +114,25 @@
   .col-header { display: flex; align-items: center; gap: 8px; margin-bottom: 1.5rem; padding-bottom: 0.75rem; border-bottom: 1px solid var(--border); }
   .col-icon { width: 22px; height: 22px; background: var(--accent-light); border-radius: 3px; display: flex; align-items: center; justify-content: center; font-size: 13px; flex-shrink: 0; }
   .col-title { font-size: 11px; letter-spacing: 0.1em; color: var(--ink-faint); text-transform: uppercase; font-weight: 500; }
-  .flag-img { width: 100%; height: auto; border: 1px solid var(--border); display: block; margin-bottom: 1.25rem; }
+  .flag-img { width: 100%; height: auto; border: 1px solid var(--border); display: block; }
+  .img-skel-wrap { width: 100%; margin-bottom: 1.25rem; }
+  .img-skel-anim {
+    background: linear-gradient(90deg, #eef1f4 25%, #dde2e7 50%, #eef1f4 75%);
+    background-size: 200% 100%; animation: skel-shine 1.5s infinite;
+    border-radius: 3px; border: 1px solid var(--border);
+  }
+  @keyframes skel-shine { 0%{background-position:200% 0} 100%{background-position:-200% 0} }
+  .img-retry-box {
+    display: none; flex-direction: column; align-items: center; gap: 8px;
+    padding: 2rem 1rem; background: var(--paper-dark);
+    border: 1px dashed var(--border); border-radius: 4px; text-align: center;
+  }
+  .img-retry-box span { font-size: 11px; color: var(--ink-faint); }
+  .img-retry-box button {
+    font-size: 11px; padding: 4px 12px; border: 1px solid var(--border);
+    border-radius: 3px; background: #fff; cursor: pointer; font-family: inherit; color: var(--ink-muted);
+  }
+  .img-retry-box button:hover { background: var(--paper-dark); }
   .emblem-wrap { width: 100%; margin-bottom: 1.25rem; display: flex; justify-content: center; }
   .emblem-img { width: 100%; height: auto; display: block; }
   .col-desc { font-size: 13px; line-height: 1.95; color: var(--ink); }
@@ -153,8 +185,9 @@
   .tag-toggle-btn .arrow { transition: transform 0.2s; display: inline-block; font-size: 14px; color: var(--hl); font-weight: 700; }
   .tag-toggle-btn.open .arrow { transform: rotate(180deg); }
   .tags-collapsible { overflow: hidden; transition: max-height 0.25s ease, opacity 0.2s; max-height: 0; opacity: 0; }
-  .tags-collapsible.open { max-height: 300px; opacity: 1; }
-  /* 모바일 목록 토글 바 */
+  .tags-collapsible.open { max-height: 220px; opacity: 1; overflow-y: auto; }
+  .tags-collapsible.open::-webkit-scrollbar { width: 3px; }
+  .tags-collapsible.open::-webkit-scrollbar-thumb { background: var(--sb-line); }
   #mobile-list-toggle {
     display: none; width: 100%; background: var(--sb-bg); color: var(--sb-text);
     border: none; border-bottom: 1px solid var(--sb-line); padding: 12px 1.1rem;
@@ -163,7 +196,6 @@
   }
   #mobile-list-toggle #mlt-current { color: var(--hl); font-weight: 500; }
   .mobile-tabs { display: none; }
-  /* 인구·면적 비교 도형 */
   .compare-row { margin-top: 8px; }
   .compare-row .cmp-label { display:flex; justify-content:space-between; font-size: 11px; color: var(--ink-muted); margin-bottom: 3px; }
   .compare-row .cmp-label b { color: var(--ink); font-weight: 500; }
@@ -187,6 +219,13 @@
     #sidebar-inner { display: none; }
     #sidebar.list-open #sidebar-inner { display: block; max-height: 75vh; overflow-y: auto; }
     #sidebar.list-open #country-list { max-height: none; }
+    /* 2단 나라목록: 모바일에선 사이드바 토글 안으로 합침 */
+    #country-col {
+      position: static; width: 100%; height: auto; border-left: none;
+      border-bottom: 1px solid var(--sb-line); display: none;
+    }
+    #sidebar.list-open ~ #country-col { display: flex; max-height: 60vh; }
+    #country-col-head { display: none; }
     #main { margin-left: 0; }
     #four-col-wrap { flex-direction: column; }
     #content-cols { grid-template-columns: 1fr !important; }
@@ -223,7 +262,7 @@
   <div id="sidebar-header">
     <div style="display:flex;align-items:center;justify-content:space-between;">
       <div>
-        <h1 style="cursor:pointer;" onclick="selectRandom()" title="랜덤 나라 보기">세계 상징 사전</h1>
+        <h1 style="cursor:pointer;" onclick="selectRandom()" title="랜덤 나라 보기">🗺️ 세계 상징 사전</h1>
         <p>WORLD SYMBOL DICTIONARY</p>
         <p style="font-size:9px;margin-top:3px;letter-spacing:0.03em;">@geotasoo / 20260612</p>
       </div>
@@ -231,8 +270,9 @@
     </div>
   </div>
   <div id="notice-wrap">
-    AI가 하는 일이라 실수를 할 수 있습니다. 잘못된 정보를 알려주세요. 직접 수정하겠습니다.
-    <a href="MAILTO_OR_FORM_URL" target="_blank" rel="noopener">[응원 및 제보]</a>
+  AI가 처리하는 일이다 보니<br>간혹 실수가 발생할 수 있습니다.<br>잘못된 정보를 알려주세요.<br>직접 처리하겠습니다.<br>
+    <a href="https://geotasoo.github.io/test/MAILTO_OR_FORM_URL" target="_blank" rel="noopener" style="font-weight:400;">[응원 및 제보]</a>
+    <div style="margin-top:6px;color:var(--sb-text-dim);">⌨ 방향키(← →)로 나라를 넘길 수 있어요.</div>
   </div>
   <div id="search-wrap">
     <input id="search" type="text" placeholder="나라 이름 검색..." />
@@ -244,18 +284,19 @@
     <button class="rtab" data-region="아프리카" data-label="아프리카">아프리카</button>
     <button class="rtab" data-region="아메리카" data-label="아메리카">아메리카</button>
     <button class="rtab" data-region="오세아니아" data-label="오세아니아">오세아니아</button>
+    <button class="rtab" data-region="FIFA 비회원·지역대표" data-label="FIFA 비회원·지역대표">FIFA 비회원·지역대표</button>
   </div>
   <div class="tag-filter-bar">
-    <button class="tag-toggle-btn" style="margin-top:0;" onclick="this.classList.toggle('open');document.getElementById('tag-pills-wrap').classList.toggle('open')">
-      <span class="arrow">▾</span> <span style="font-size:11px;white-space:nowrap;font-weight:500;">상징과 색으로 찾기</span>
-    </button>
-    <div class="tags-collapsible" id="tag-pills-wrap">
-      <div id="tag-pills" style="display:flex;flex-wrap:wrap;gap:3px;margin-top:6px;"></div>
-    </div>
+    <div style="font-size:10px;letter-spacing:0.08em;color:var(--sb-text-dim);text-transform:uppercase;margin-bottom:6px;">상징과 색으로 찾기</div>
+    <div id="tag-pills" style="display:flex;flex-wrap:wrap;gap:3px;"></div>
   </div>
-  <div id="country-list"></div>
   </div>
 </nav>
+
+<aside id="country-col">
+  <div id="country-col-head"><b id="ccount">전체</b> 나라 목록</div>
+  <div id="country-list"></div>
+</aside>
 
 <main id="main">
   <div id="welcome">
@@ -401,6 +442,31 @@ function csvToCountry(row) {
   };
 }
 
+function imgSkel(src, cls, alt) {
+  if (!src) return '';
+  var h = (cls === 'flag-img') ? 'padding-top:62%;height:0' : 'height:140px';
+  return '<div class="img-skel-wrap">'
+    + '<div class="img-skel-anim" style="' + h + '"></div>'
+    + '<img class="' + cls + '" src="' + src + '" alt="' + alt + '" style="display:none" data-src="' + src + '"'
+    + ' onload="var p=this.parentNode;p.querySelector(\'.img-skel-anim\').style.display=\'none\';this.style.display=\'\'"'
+    + ' onerror="var p=this.parentNode;p.querySelector(\'.img-skel-anim\').style.display=\'none\';p.querySelector(\'.img-retry-box\').style.display=\'flex\';this.style.display=\'none\'">'
+    + '<div class="img-retry-box" style="display:none"><span>이미지 로드 실패</span>'
+    + '<button onclick="retryImg(this)">↻ 다시 시도</button></div>'
+    + '</div>';
+}
+
+function retryImg(btn) {
+  var wrap = btn.parentNode.parentNode;
+  var img = wrap.querySelector('img');
+  var retry = wrap.querySelector('.img-retry-box');
+  var skel = wrap.querySelector('.img-skel-anim');
+  retry.style.display = 'none';
+  skel.style.cssText = (img.className === 'flag-img') ? 'padding-top:62%;height:0' : 'height:140px';
+  img.style.display = 'none';
+  img.src = '';
+  setTimeout(function() { img.src = img.dataset.src; }, 60);
+}
+
 async function loadFromSheet() {
   try {
     const res = await fetch(SHEET_URL);
@@ -442,6 +508,8 @@ function updateRegionCounts() {
 function buildList() {
   const ul = document.getElementById('country-list');
   ul.innerHTML = '';
+  const cc = document.getElementById('ccount');
+  if (cc) cc.textContent = filtered.length + '개';
   filtered.forEach((c, i) => {
     const div = document.createElement('div');
     div.className = 'country-item' + (i === currentIdx ? ' active' : '');
@@ -539,8 +607,8 @@ function applyFlagBand(c) {
   band.style.background = `linear-gradient(90deg, ${stops})`;
 }
 
-const KR_POP = 51.7e6;      // 대한민국 인구 (약 5170만)
-const KR_AREA = 100210;     // 대한민국 면적 (km², 남한)
+const KR_POP = 51.7e6;
+const KR_AREA = 100210;
 
 function parseNum(s) {
   if (!s) return null;
@@ -566,7 +634,6 @@ function compareBar(labelKo, valStr, krVal, fmt, unitName) {
   const v = parseNum(valStr);
   if (v == null) return '';
   const ratio = v / krVal;
-  // 막대: 둘 중 큰 쪽을 100%로
   const maxV = Math.max(v, krVal);
   const krPct = Math.max(2, Math.round(krVal/maxV*100));
   const cPct = Math.max(2, Math.round(v/maxV*100));
@@ -586,7 +653,7 @@ function renderPage(c) {
     `<div class="nickname-item">${n}</div>`
   ).join('') || '<div class="nickname-item" style="color:var(--ink-faint);font-style:italic">별명 준비 중</div>';
 
-  const mapQuery = encodeURIComponent(c.en);
+  const mapQuery = encodeURIComponent(c.name + ' ' + c.en);
   const mapUrl = `https://maps.google.com/maps?q=${mapQuery}&t=m&z=4&output=embed`;
 
   const greetHtml = [
@@ -597,7 +664,6 @@ function renderPage(c) {
    .map(g => `<div class="greet-row"><span class="g-label">${g[0]}</span><span class="g-val">${g[1]}</span></div>`)
    .join('');
 
-  // 국가(國歌) 블록 먼저 생성
   let anthemBlock = `<hr class="info-divider"><div class="info-section-title">국가 (國歌)</div>`;
   anthemBlock += `<div class="anthem-name" style="display:flex;align-items:flex-start;gap:8px;flex-wrap:wrap;"><div style="flex:1;min-width:0;"><div class="title">${anthemTitleHtml(c)}</div><div class="sub">${c.anthem.sub || ''}</div></div>`;
   const embedUrl = ytEmbedUrl(c.anthemYoutube);
@@ -610,7 +676,6 @@ function renderPage(c) {
   }
 
   const parts = [];
-  // 순서: 지도 → 안전여행 → 국가 → 뜻 → 별명 → 수도 → 언어
   parts.push(`<div class="map-wrap"><iframe src="${mapUrl}" allowfullscreen loading="lazy"></iframe></div>`);
   if (c.safetyUrl) {
     parts.push(`<a class="safety-btn" href="${c.safetyUrl}" target="_blank" rel="noopener"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>외교부 해외안전여행 정보</a>`);
@@ -623,7 +688,6 @@ function renderPage(c) {
     parts.push(block);
   }
 
-  // 인구 · 면적 (남한 비교 도형)
   const popBar = compareBar('인구', c.population, KR_POP, fmtPop, '이 나라');
   const areaBar = compareBar('면적', c.area, KR_AREA, fmtArea, '이 나라');
   if (popBar || areaBar) {
@@ -645,7 +709,6 @@ function renderPage(c) {
     + (c.colors||[]).map(t=>`<span class="tag-pill color-tag" style="cursor:default">${t}</span>`).join('');
   document.getElementById('tb-tags').innerHTML = tagHtml;
 
-  // 상단 요약 4줄: 나라 이름 유래 / 별명 / 주요 도시 / 해시태그
   const sumParts = [];
   if (c.meaning) {
     sumParts.push(`<div class="sum-row"><span class="sum-label">나라이름 유래</span><span class="sum-val">${c.meaning}</span></div>`);
@@ -658,28 +721,28 @@ function renderPage(c) {
     sumParts.push(`<div class="sum-row"><span class="sum-label">주요 도시</span><span class="sum-val">${cities}</span></div>`);
   }
   if ((c.cultureTags||[]).length) {
-    const tags = c.cultureTags.map(t => `<span class="culture-tag">#${t}</span>`).join('');
+    const tags = c.cultureTags.map(t => `<span class="culture-tag" onclick="filterByCultureTag('${t.replace(/'/g,"\\'")}')" title="#${t} 태그가 있는 나라 보기">#${t}</span>`).join('');
     sumParts.push(`<div class="sum-row"><span class="sum-label">&nbsp;</span><span class="sum-val sum-tags">${tags}</span></div>`);
   }
   document.getElementById('tb-summary').innerHTML = sumParts.join('');
 
   document.getElementById('col-flag').innerHTML = `
     <div class="col-header"><div class="col-icon">🏳️</div><span class="col-title">국기</span></div>
-    <img class="flag-img" src="${c.flag}" alt="${c.name} 국기" onerror="this.style.opacity=0.15" >
+    ${imgSkel(c.flag, 'flag-img', c.name + ' 국기')}
     ${c.ready ? `<div class="col-desc">${c.flagDesc}</div>` : '<div class="coming-soon">해설 준비 중입니다</div>'}
     ${c.flagWiki ? `<div class="source-line"><a href="${c.flagWiki}" target="_blank" rel="noopener">위키백과 원문 보기 ↗</a></div>` : ''}
   `;
 
   document.getElementById('col-emblem').innerHTML = `
     <div class="col-header"><div class="col-icon">🔰</div><span class="col-title">국장</span></div>
-    <div class="emblem-wrap">${c.emblem ? `<img class="emblem-img" src="${c.emblem}" alt="${c.name} 국장" onerror="this.style.opacity=0.15">` : ''}</div>
+    <div class="emblem-wrap">${imgSkel(c.emblem, 'emblem-img', c.name + ' 국장')}</div>
     ${c.ready ? `<div class="col-desc">${c.emblemDesc.replace(/\n\n/g,'<br><br>')}</div>` : '<div class="coming-soon">해설 준비 중입니다</div>'}
     ${c.emblemWiki ? `<div class="source-line"><a href="${c.emblemWiki}" target="_blank" rel="noopener">위키백과 원문 보기 ↗</a></div>` : ''}
   `;
 
   document.getElementById('col-football').innerHTML = `
     <div class="col-header"><div class="col-icon">⚽</div><span class="col-title">축구협회 및 연맹 엠블럼</span></div>
-    <div class="emblem-wrap">${c.football ? `<img class="emblem-img" src="${c.football}" alt="${c.name} 축구협회 및 연맹 엠블럼" onerror="this.style.opacity=0.15">` : ''}</div>
+    <div class="emblem-wrap">${imgSkel(c.football, 'emblem-img', c.name + ' 축구협회 및 연맹 엠블럼')}</div>
     ${c.footballDesc ? `<div class="col-desc">${c.footballDesc.replace(/\n\n/g,'<br><br>')}</div>` : '<div class="coming-soon">축구협회 및 연맹 엠블럼 준비 중입니다</div>'}
     ${c.footballWiki ? `<div class="source-line"><a href="${c.footballWiki}" target="_blank" rel="noopener">원문 보기 ↗</a></div>` : ''}
   `;
@@ -696,6 +759,8 @@ function applyFilter(q, region) {
   });
   currentIdx = 0;
   buildList();
+  const listEl = document.getElementById('country-list');
+  if (listEl) listEl.scrollTop = 0;
   if(filtered.length > 0) {
     selectCountry(0);
   } else {
@@ -705,7 +770,13 @@ function applyFilter(q, region) {
 }
 
 document.getElementById('search').addEventListener('input', function() {
-  applyFilter(this.value.trim().toLowerCase(), currentRegion);
+  const q = this.value.trim().toLowerCase();
+  // 검색 시 모든 필터를 무시하고 전체에서 검색 (지워도 전체 유지)
+  activeTagFilter = null;
+  document.querySelectorAll('#tag-pills .tag-pill').forEach(b => b.classList.remove('active'));
+  currentRegion = 'all';
+  document.querySelectorAll('.rtab').forEach(b => b.classList.toggle('active', b.dataset.region === 'all'));
+  applyFilter(q, 'all');
 });
 
 document.querySelectorAll('.rtab').forEach(btn => {
@@ -767,17 +838,33 @@ function switchMobileTab(tab, btn) {
   else if (tab === 'football') document.getElementById('col-football').classList.add('mobile-active');
 }
 
+function filterByCultureTag(tag) {
+  // 해당 컬처태그를 가진 나라만 필터 (지역·상징 필터 해제, 검색 비움)
+  document.getElementById('search').value = '';
+  currentRegion = 'all';
+  activeTagFilter = null;
+  document.querySelectorAll('.rtab').forEach(b => b.classList.toggle('active', b.dataset.region === 'all'));
+  document.querySelectorAll('#tag-pills .tag-pill').forEach(b => b.classList.remove('active'));
+  filtered = COUNTRIES.filter(c => (c.cultureTags||[]).includes(tag));
+  currentIdx = 0;
+  buildList();
+  const listEl = document.getElementById('country-list');
+  if (listEl) listEl.scrollTop = 0;
+  if (filtered.length > 0) selectCountry(0);
+}
+
 function selectRandom() {
-  const pool = filtered.length > 0 ? filtered : COUNTRIES;
-  if (pool.length === 0) return;
-  const idx = Math.floor(Math.random() * pool.length);
-  const targetCode = pool[idx].code;
-  const filteredIdx = filtered.findIndex(c => c.code === targetCode);
-  if (filteredIdx >= 0) {
-    selectCountry(filteredIdx);
-    const items = document.querySelectorAll('.country-item');
-    if (items[filteredIdx]) items[filteredIdx].scrollIntoView({block:'nearest'});
-  }
+  if (COUNTRIES.length === 0) return;
+  // 주사위는 항상 모든 필터를 풀고 전체에서 뽑음
+  document.getElementById('search').value = '';
+  currentRegion = 'all';
+  activeTagFilter = null;
+  document.querySelectorAll('.rtab').forEach(b => b.classList.toggle('active', b.dataset.region === 'all'));
+  document.querySelectorAll('#tag-pills .tag-pill').forEach(b => b.classList.remove('active'));
+  applyFilter('', 'all');
+  const idx = Math.floor(Math.random() * filtered.length);
+  selectCountry(idx);
+  document.querySelectorAll('.country-item')[idx]?.scrollIntoView({block:'nearest'});
 }
 
 function goToCode(code) {
@@ -811,6 +898,9 @@ document.addEventListener('keydown', function(e) {
   }
 });
 
+if ('serviceWorker' in navigator) {
+  navigator.serviceWorker.register('./sw.js').catch(function(){});
+}
 loadFromSheet();
 </script>
 </body>
