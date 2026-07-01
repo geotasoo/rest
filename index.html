@@ -192,7 +192,7 @@
   <label>나라 경계 굵기:<input type="range" id="slider-nk" min="1" max="10" step="0.5" value="1"><span class="value" id="nk-value">1.0</span></label>
   <label>시도 경계 굵기:<input type="range" id="slider-sd" min="1" max="10" step="0.5" value="1"><span class="value" id="sd-value">1.0</span></label>
   <label>시군 경계 굵기:<input type="range" id="slider-sg" min="0.5" max="10" step="0.5" value="0.5"><span class="value" id="sg-value">0.5</span></label>
-  <label>점 크기:<input type="range" id="dotSize" min="1" max="20" step="0.5" value="1"><span class="value" id="dot-size-value">1.0</span></label>
+  <label>점 크기:<input type="range" id="dotSize" min="0.5" max="20" step="0.5" value="1"><span class="value" id="dot-size-value">1.0</span></label>
   <label>점 색상:<input type="color" id="dotColor" value="#e53935"></label>
   <label style="display:flex;align-items:center;gap:4px;"><input type="checkbox" id="dotStroke" checked style="margin:0;"><span>점 테두리</span></label>
   <button id="btn-dot-panel" class="tb-btn primary">📍 점찍기</button>
@@ -282,7 +282,7 @@ let baseOn=false;const baseLayer=L.tileLayer('https://{s}.tile.openstreetmap.org
 let highlightFill='#FFD700',sgVisible=true,defaultLandOpacity=0.3;
 const defaultStyle={sd:{color:'#444',weight:1,fillColor:'#fff',fillOpacity:defaultLandOpacity,opacity:1},sg:{color:'#444',weight:0.5,fillOpacity:0,opacity:1}};
 const coloredSd=new Map(),coloredSg=new Map();
-let sdLayer,sgLayer,sdBorderLayer,nkLayer,skLayer,selectedProvinces=new Set(),provinceNames=[];
+let sdLayer,sgLayer,sdBorderLayer,nkLayer,skLayer,skBorderLayer,selectedProvinces=new Set(),provinceNames=[];
 
 // ===== 게임에서 사용할 수 있도록 전역 노출 =====
 window._km = {
@@ -539,6 +539,7 @@ Promise.all([
     if(sgLayer)map.removeLayer(sgLayer);
     if(sdBorderLayer)map.removeLayer(sdBorderLayer);
     if(skLayer)map.removeLayer(skLayer);
+    if(skBorderLayer)map.removeLayer(skBorderLayer);
 
     const sel=Array.from(selectedProvinces);
     const ff=sel.length===0?(f=>false):(f=>sel.includes(f.properties.NL_NAME_1));
@@ -566,6 +567,9 @@ Promise.all([
       sdBorderLayer=L.geoJSON(sdJson,{filter:ff,style:()=>({color:'#222',weight:parseFloat($('slider-sd').value),fillOpacity:0,opacity:1}),interactive:false}).addTo(map);
       sdLayer.setStyle({fillOpacity:defaultLandOpacity,opacity:1});
       sdBorderLayer.bringToFront();
+      // 남한 국경선(나라 굵기)을 맨 위에 얹기
+      skBorderLayer=L.geoJSON(skJson,{style:()=>({color:'#333',weight:parseFloat($('slider-nk').value),fillOpacity:0,opacity:1}),interactive:false}).addTo(map);
+      skBorderLayer.bringToFront();
     } else {
       // 시군(3): sg + sd border
       sdLayer=createSdLayer(ff).addTo(map);
@@ -574,6 +578,9 @@ Promise.all([
       sdBorderLayer.bringToFront();
       sdLayer.setStyle({fillOpacity:0,opacity:0.5});
       map.addLayer(sgLayer);
+      // 남한 국경선(나라 굵기)을 맨 위에 얹기
+      skBorderLayer=L.geoJSON(skJson,{style:()=>({color:'#333',weight:parseFloat($('slider-nk').value),fillOpacity:0,opacity:1}),interactive:false}).addTo(map);
+      skBorderLayer.bringToFront();
     }
 
     if(nkVisible) nkLayer.bringToBack();
@@ -606,6 +613,7 @@ Promise.all([
     $('nk-value').textContent=(+e.target.value).toFixed(1);
     if(nkLayer)nkLayer.setStyle({weight:+e.target.value});
     if(skLayer)skLayer.setStyle({weight:+e.target.value});
+    if(skBorderLayer)skBorderLayer.setStyle({weight:+e.target.value});
   });
   $('slider-sg').addEventListener('input',e=>{$('sg-value').textContent=(+e.target.value).toFixed(1);if(sgLayer)sgLayer.setStyle({weight:+e.target.value});if(sdBorderLayer)sdBorderLayer.bringToFront();});
   $('btn-reset').addEventListener('click',()=>location.reload());
